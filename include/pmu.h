@@ -1,5 +1,6 @@
 // https://man7.org/linux/man-pages/man2/perf_event_open.2.html
-#pragma once
+#ifndef _DD_
+#define _DD_
 
 #include <asm/unistd.h>
 #include <inttypes.h>
@@ -215,4 +216,6 @@ void create_perf_hw_cache_events(struct perf_l1_access_id *grp);
 
 #ifdef __cplusplus
 }
+#endif
+
 #endif
