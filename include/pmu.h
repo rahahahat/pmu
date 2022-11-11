@@ -1,6 +1,6 @@
 // https://man7.org/linux/man-pages/man2/perf_event_open.2.html
 #define _GNU_SOURCE
-
+extern "C" {
 #include <asm/unistd.h>
 #include <inttypes.h>
 #include <linux/perf_event.h>
@@ -208,3 +208,4 @@ void create_perf_hw_cache_events(struct perf_l1_access_id *grp);
   printf("L1 Miss: %ld\n", perf_grp->miss_count_aggr / RUNS);                  \
   printf("L1 Accesses: %ld\n", perf_grp->hit_count_aggr / RUNS);               \
   free(perf_grp);
+}
