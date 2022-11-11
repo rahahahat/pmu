@@ -1,10 +1,10 @@
-extern "C" {
+
 #include "pmu.h"
 #include <fstream>
 #include <iostream>
 #include <string>
 #include <vector>
-
+extern "C" {
 std::vector<std::string> split(std::string s, std::string delimiter) {
   size_t pos_start = 0, pos_end, delim_len = delimiter.length();
   std::string token;
