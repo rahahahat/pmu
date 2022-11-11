@@ -93,11 +93,8 @@ void read_perf_hw_cache_events(struct perf_l1_access_id *grp) {
   grp->miss_count_aggr += read_perf_event(grp->g_fd, grp->miss_id, 2);
 };
 
-perf_l1_access_id *create_perf_hw_cache_events() {
-
+void create_perf_hw_cache_events(struct perf_l1_access_id *out) {
   struct perf_event_attr pe;
-  struct perf_l1_access_id *out =
-      (perf_l1_access_id *)malloc(sizeof(perf_l1_access_id));
 
   uint64_t fd;
   memset(&pe, 0, sizeof(struct perf_event_attr));
@@ -137,5 +134,4 @@ perf_l1_access_id *create_perf_hw_cache_events() {
   out->g_fd = fd;
   out->hit_id = get_perf_event_id(fd);
   out->miss_id = get_perf_event_id(fd_miss);
-  return out;
 }

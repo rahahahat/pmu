@@ -162,7 +162,7 @@ uint64_t read_perf_event(int fd, uint64_t id, uint64_t num_events);
 uint64_t *parseHexArguments(int arg_count, int start_idx, char **argv);
 uint64_t create_perf_event(uint32_t config, int group_fd);
 void read_perf_hw_cache_events(struct perf_l1_access_id *grp);
-struct perf_l1_access_id *create_perf_hw_cache_events();
+void create_perf_hw_cache_events(struct perf_l1_access_id *grp);
 
 #define RUN_PERF(RUNS, CTR_NUM, START_IDX, ...)                                \
   uint64_t argct = CTR_NUM;                                                    \
@@ -194,8 +194,10 @@ struct perf_l1_access_id *create_perf_hw_cache_events();
   free(counters);
 
 #define RUN_PERF_CACHE(RUNS, ...)                                              \
+  struct perf_l1_access_id *perf_grp =                                         \
+      (perf_l1_access_id *)malloc(sizeof(perf_l1_access_id));                  \
   for (size_t x = 0; x < RUNS; x++) {                                          \
-    struct perf_l1_access_id *perf_grp = create_perf_hw_cache_events();        \
+    create_perf_hw_cache_events(perf_grp);                                     \
     perf_grp->miss_count_aggr = 0;                                             \
     perf_grp->hit_count_aggr = 0;                                              \
     reset_perf_event(perf_grp->g_fd, 1);                                       \
@@ -204,4 +206,5 @@ struct perf_l1_access_id *create_perf_hw_cache_events();
     disable_perf_event(perf_grp->g_fd, 1);                                     \
   }                                                                            \
   printf("L1 Miss: %ld\n", perf_grp->miss_count_aggr / RUNS);                  \
-  printf("L1 Accesses: %ld\n", perf_grp->hit_count_aggr / RUNS);
+  printf("L1 Accesses: %ld\n", perf_grp->hit_count_aggr / RUNS);               \
+  free(perf_grp);
