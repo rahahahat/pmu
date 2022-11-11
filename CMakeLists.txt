@@ -1,0 +1,18 @@
+project(PMU)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+set(CMAKE_MACOSX_RPATH 1)
+
+set(SOURCES pmu.cc)
+add_library(pmu STATIC ${SOURCES})
+target_include_directories(pmu PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_compile_options(pmu PUBLIC -static)
+
+install(TARGETS pmu DESTINATION lib)
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/
+        DESTINATION include
+        FILES_MATCHING PATTERN "*.h")
