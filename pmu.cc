@@ -1,12 +1,9 @@
-
+extern "C" {
 #include "pmu.h"
 #include <fstream>
 #include <iostream>
 #include <string>
 #include <vector>
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 std::vector<std::string> split(std::string s, std::string delimiter) {
   size_t pos_start = 0, pos_end, delim_len = delimiter.length();
@@ -230,6 +227,4 @@ void print_counters(struct perf_args *args) {
               << (uint64_t)(args->vals[x] / args->runs) << std::endl;
   }
 };
-#ifdef __cplusplus
 }
-#endif
