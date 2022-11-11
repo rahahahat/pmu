@@ -153,7 +153,7 @@ uint64_t create_perf_event(uint32_t config, int group_fd) {
   return fd;
 }
 
-perf_args *parseHexArguments(int argc, char **argv) {
+struct perf_args *parseHexArguments(int argc, char **argv) {
   struct perf_args *args_ = (perf_args *)malloc(sizeof(struct perf_args));
   size_t arg_count = argc - 1;
   std::vector<uint64_t> ctrsvec;

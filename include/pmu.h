@@ -108,7 +108,7 @@ uint64_t read_perf_event(int fd, uint64_t id, uint64_t num_events);
 
 uint64_t create_perf_event(uint32_t config, int group_fd);
 
-perf_args *parseHexArguments(int argc, char **argv);
+struct perf_args *parseHexArguments(int argc, char **argv);
 struct perf_args *start_pmu_events(int argc, char **argv);
 void stop_perf_events(struct perf_args *args);
 void read_perf_events(struct perf_args *args);
