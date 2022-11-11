@@ -1,7 +1,0 @@
-/home/rahat/asimov/pmu/build/CMakeFiles/pmu.dir
-/home/rahat/asimov/pmu/build/CMakeFiles/edit_cache.dir
-/home/rahat/asimov/pmu/build/CMakeFiles/rebuild_cache.dir
-/home/rahat/asimov/pmu/build/CMakeFiles/list_install_components.dir
-/home/rahat/asimov/pmu/build/CMakeFiles/install.dir
-/home/rahat/asimov/pmu/build/CMakeFiles/install/local.dir
-/home/rahat/asimov/pmu/build/CMakeFiles/install/strip.dir

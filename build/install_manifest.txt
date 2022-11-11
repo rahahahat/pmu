@@ -1,2 +1,0 @@
-/home/rahat/asimov/pmu/install/lib/libpmu.a
-/home/rahat/asimov/pmu/install/include/pmu.h

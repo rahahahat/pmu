@@ -1,2 +1,0 @@
-/usr/bin/ar qc libpmu.a CMakeFiles/pmu.dir/pmu.o
-/usr/bin/ranlib libpmu.a
