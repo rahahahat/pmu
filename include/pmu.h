@@ -162,7 +162,7 @@ uint64_t read_perf_event(int fd, uint64_t id, uint64_t num_events);
 uint64_t *parseHexArguments(int arg_count, int start_idx, char **argv);
 uint64_t create_perf_event(uint32_t config, int group_fd);
 void read_perf_hw_cache_events(struct perf_l1_access_id *grp);
-perf_l1_access_id *create_perf_hw_cache_events();
+struct perf_l1_access_id *create_perf_hw_cache_events();
 
 #define RUN_PERF(RUNS, CTR_NUM, START_IDX, ...)                                \
   uint64_t argct = CTR_NUM;                                                    \
