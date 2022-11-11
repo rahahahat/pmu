@@ -78,62 +78,8 @@ enum hex_values {
   L2_PIPE_COMP_ALL = 0x0350
 };
 
-enum hex_values getHexValue(char *ctr) {
-  CMP(CPU_CYCLES, ctr, 11)
-  CMP(L1D_CACHE, ctr, 10)
-  CMP(INST_RETIRED, ctr, 13)
-  CMP(BR_MIS_PRED, ctr, 12)
-  CMP(L2D_CACHE, ctr, 10)
-  CMP(STALL_FRONTEND, ctr, 15)
-  CMP(STALL_BACKEND, ctr, 14)
-  CMP(LD_SPEC, ctr, 8)
-  CMP(LD_COMP_WAIT_L2_MISS, ctr, 21)
-  CMP(LD_COMP_WAIT_L2_MISS_EX, ctr, 24)
-  CMP(LD_COMP_WAIT_L1_MISS, ctr, 21)
-  CMP(LD_COMP_WAIT_L1_MISS_EX, ctr, 24)
-  CMP(LD_COMP_WAIT, ctr, 13)
-  CMP(LD_COMP_WAIT_EX, ctr, 16)
-  CMP(L1_MISS_WAIT, ctr, 13)
-  CMP(L1_PIPE0_VAL, ctr, 13)
-  CMP(L1_PIPE1_VAL, ctr, 13)
-  CMP(L1_PIPE0_COMP, ctr, 14)
-  CMP(L1_PIPE1_COMP, ctr, 14)
-  CMP(L2_MISS_WAIT, ctr, 13)
-  CMP(L2_MISS_COUNT, ctr, 14)
-  CMP(L2_PIPE_VAL, ctr, 12)
-  CMP(L2_PIPE_COMP_ALL, ctr, 17)
-  return NONE;
-}
-
-char *getHexStr(enum hex_values val) {
-  switch (val) {
-    STRCASE(CPU_CYCLES)
-    STRCASE(L1D_CACHE)
-    STRCASE(INST_RETIRED)
-    STRCASE(BR_MIS_PRED)
-    STRCASE(L2D_CACHE)
-    STRCASE(STALL_FRONTEND)
-    STRCASE(STALL_BACKEND)
-    STRCASE(LD_SPEC)
-    STRCASE(LD_COMP_WAIT_L2_MISS)
-    STRCASE(LD_COMP_WAIT_L2_MISS_EX)
-    STRCASE(LD_COMP_WAIT_L1_MISS)
-    STRCASE(LD_COMP_WAIT_L1_MISS_EX)
-    STRCASE(LD_COMP_WAIT)
-    STRCASE(LD_COMP_WAIT_EX)
-    STRCASE(L1_MISS_WAIT)
-    STRCASE(L1_PIPE0_VAL)
-    STRCASE(L1_PIPE1_VAL)
-    STRCASE(L1_PIPE0_COMP)
-    STRCASE(L1_PIPE1_COMP)
-    STRCASE(L2_MISS_WAIT)
-    STRCASE(L2_MISS_COUNT)
-    STRCASE(L2_PIPE_VAL)
-    STRCASE(L2_PIPE_COMP_ALL)
-  default:
-    return "NONE";
-  }
-}
+enum hex_values getHexValue(char *ctr);
+char *getHexStr(enum hex_values val);
 
 struct read_format {
   uint64_t nr;
