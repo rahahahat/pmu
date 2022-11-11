@@ -222,9 +222,9 @@ void free_perf_args(struct perf_args *args) {
 
 void print_counters(struct perf_args *args) {
   for (size_t x = 0; x < args->counter_count; x++) {
-    std::stringstream ss;
-    ss << getHexStr((hex_values)args->hex_vals[x]) << ": "
-       << (uint64_t)(args->vals[x] / args->runs);
-    std::cout << ss.str() << std::endl;
+    std::string s = "";
+    s + getHexStr((hex_values)args->hex_vals[x]) + ": " +
+        (uint64_t)(args->vals[x] / args->runs);
+    std::cout << s << std::endl;
   }
 };
