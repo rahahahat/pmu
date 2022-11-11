@@ -1,6 +1,6 @@
 // https://man7.org/linux/man-pages/man2/perf_event_open.2.html
-#define _GNU_SOURCE
-extern "C" {
+#pragma once
+
 #include <asm/unistd.h>
 #include <inttypes.h>
 #include <linux/perf_event.h>
@@ -11,6 +11,10 @@ extern "C" {
 #include <sys/syscall.h>
 #include <sys/types.h>
 #include <unistd.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 static char *labels[23] = {"CPU_CYCLES",
                            "L1D_CACHE",
@@ -195,7 +199,7 @@ void create_perf_hw_cache_events(struct perf_l1_access_id *grp);
 
 #define RUN_PERF_CACHE(RUNS, ...)                                              \
   struct perf_l1_access_id *perf_grp =                                         \
-      (perf_l1_access_id *)malloc(sizeof(perf_l1_access_id));                  \
+      malloc(sizeof(struct perf_l1_access_id));                                \
   for (size_t x = 0; x < RUNS; x++) {                                          \
     create_perf_hw_cache_events(perf_grp);                                     \
     perf_grp->miss_count_aggr = 0;                                             \
@@ -208,4 +212,7 @@ void create_perf_hw_cache_events(struct perf_l1_access_id *grp);
   printf("L1 Miss: %ld\n", perf_grp->miss_count_aggr / RUNS);                  \
   printf("L1 Accesses: %ld\n", perf_grp->hit_count_aggr / RUNS);               \
   free(perf_grp);
+
+#ifdef __cplusplus
 }
+#endif

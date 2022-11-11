@@ -1,3 +1,4 @@
+extern "C" {
 #include "pmu.h"
 
 static uint64_t perf_event_open(struct perf_event_attr *hw_event, pid_t pid,
@@ -134,4 +135,5 @@ void create_perf_hw_cache_events(struct perf_l1_access_id *out) {
   out->g_fd = fd;
   out->hit_id = get_perf_event_id(fd);
   out->miss_id = get_perf_event_id(fd_miss);
+}
 }
