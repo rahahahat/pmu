@@ -148,8 +148,8 @@ struct perf_l1_access_id {
   uint64_t g_fd;
   uint64_t miss_id;
   uint64_t hit_id;
-  uint64_t miss_count_aggr = 0;
-  uint64_t hit_count_aggr = 0;
+  uint64_t miss_count_aggr;
+  uint64_t hit_count_aggr;
 };
 
 static uint64_t perf_event_open(struct perf_event_attr *hw_event, pid_t pid,
@@ -196,6 +196,8 @@ struct perf_l1_access_id *create_perf_hw_cache_events();
 #define RUN_PERF_CACHE(RUNS, ...)                                              \
   for (size_t x = 0; x < RUNS; x++) {                                          \
     struct perf_l1_access_id *perf_grp = create_perf_hw_cache_events();        \
+    perf_grp->miss_count_aggr = 0;                                             \
+    perf_grp->hit_count_aggr = 0;                                              \
     reset_perf_event(perf_grp->g_fd, 1);                                       \
     enable_perf_event(perf_grp->g_fd, 1);                                      \
     {__VA_ARGS__};                                                             \
