@@ -1,7 +1,27 @@
 
 #include "pmu.h"
+#include "json.hpp"
+#include <fstream>
+#include <iostream>
+#include <string>
+#include <vector>
 
-enum hex_values getHexValue(char *ctr) {
+std::vector<std::string> split(std::string s, std::string delimiter) {
+  size_t pos_start = 0, pos_end, delim_len = delimiter.length();
+  std::string token;
+  std::vector<std::string> res;
+
+  while ((pos_end = s.find(delimiter, pos_start)) != std::string::npos) {
+    token = s.substr(pos_start, pos_end - pos_start);
+    pos_start = pos_end + delim_len;
+    res.push_back(token);
+  }
+
+  res.push_back(s.substr(pos_start));
+  return res;
+}
+
+enum hex_values getHexValue(const char *ctr) {
   CMP(CPU_CYCLES, ctr, 11)
   CMP(L1D_CACHE, ctr, 10)
   CMP(INST_RETIRED, ctr, 13)
@@ -111,21 +131,6 @@ uint64_t read_perf_event(int fd, uint64_t id, uint64_t num_events) {
   return 0;
 }
 
-uint64_t *parseHexArguments(int arg_count, int start_idx, char **argv) {
-  if (arg_count > 2 && arg_count > 0) {
-    printf("Invaid counter count. Please supply atleast 1 or atmost 2 "
-           "counters. \n");
-    exit(1);
-  }
-  uint64_t *arg_array = (uint64_t *)malloc(arg_count * sizeof(uint64_t));
-  for (size_t x = 0; x < arg_count; x++) {
-    size_t hex_idx = x + start_idx;
-    uint64_t hex = (uint64_t)getHexValue(argv[hex_idx]);
-    arg_array[x] = hex;
-  }
-  return arg_array;
-}
-
 uint64_t create_perf_event(uint32_t config, int group_fd) {
   struct perf_event_attr pe;
   uint64_t fd;
@@ -146,50 +151,91 @@ uint64_t create_perf_event(uint32_t config, int group_fd) {
   return fd;
 }
 
-void read_perf_hw_cache_events(struct perf_l1_access_id *grp) {
-  grp->hit_count_aggr += read_perf_event(grp->g_fd, grp->hit_id, 2);
-  grp->miss_count_aggr += read_perf_event(grp->g_fd, grp->miss_id, 2);
+perf_args *parseHexArguments(int argc, char **argv) {
+  struct perf_args *args_ = (perf_args *)malloc(sizeof(struct perf_args));
+  size_t arg_count = argc - 1;
+  std::vector<uint64_t> ctrsvec;
+  std::vector<std::string> labels;
+  for (size_t x = 1; x < argc; x++) {
+    std::string s(argv[x]);
+    if (s.find("--counters") != std::string::npos) {
+      auto vec = split(s, "=");
+      auto ctr_vec = split(vec[1], ",");
+      for (auto itr = ctr_vec.begin(); itr != ctr_vec.end(); itr++) {
+        uint64_t hex = getHexValue((*itr).c_str());
+        ctrsvec.push_back(hex);
+        labels.push_back((*itr));
+      }
+    }
+    if (s.find("--runs") != std::string::npos) {
+      auto vec = split(s, "=");
+      args_->runs = std::stoull(vec[1]);
+    }
+  }
+  size_t ctr_count = ctrsvec.size();
+  args_->counter_count = ctr_count;
+  if (ctr_count > 2 && ctr_count > 0) {
+    printf("Invaid counter count. Please supply atleast 1 or atmost 2 "
+           "counters. \n");
+    exit(1);
+  }
+  uint64_t *arg_array = (uint64_t *)malloc(ctr_count * sizeof(uint64_t));
+  for (size_t x = 0; x < ctr_count; x++) {
+    arg_array[x] = ctrsvec[x];
+  }
+  args_->hex_vals = arg_array;
+  return args_;
+}
+
+struct perf_args *start_pmu_events(int argc, char **argv) {
+  struct perf_args *args_ = parseHexArguments(argc, argv);
+  args_->ids = (uint64_t *)malloc(args_->counter_count * sizeof(uint64_t));
+  args_->vals = (uint64_t *)malloc(args_->counter_count * sizeof(uint64_t));
+  args_->group_fd = -1;
+  for (size_t x = 0; x < args_->counter_count; x++) {
+    args_->vals[x] = 0;
+    int fd_ = create_perf_event(args_->hex_vals[x], args_->group_fd);
+    args_->group_fd = (x == 0) ? fd_ : args_->group_fd;
+    args_->ids[x] = get_perf_event_id(fd_);
+  }
+  reset_perf_event(args_->group_fd, 1);
+  enable_perf_event(args_->group_fd, 1);
+  return args_;
 };
 
-void create_perf_hw_cache_events(struct perf_l1_access_id *out) {
-  struct perf_event_attr pe;
+void stop_perf_events(struct perf_args *args) {
+  disable_perf_event(args->group_fd, 1);
+};
 
-  uint64_t fd;
-  memset(&pe, 0, sizeof(struct perf_event_attr));
-
-  pe.type = PERF_TYPE_HW_CACHE;
-  pe.size = sizeof(struct perf_event_attr);
-  pe.config = PERF_COUNT_HW_CACHE_L1D | PERF_COUNT_HW_CACHE_OP_READ << 8 |
-              PERF_COUNT_HW_CACHE_RESULT_ACCESS << 16;
-  pe.disabled = 1;
-  pe.exclude_kernel = 1;
-  pe.exclude_hv = 1;
-  pe.read_format = PERF_FORMAT_GROUP | PERF_FORMAT_ID;
-
-  fd = perf_event_open(&pe, 0, -1, -1, 0);
-  if (fd == -1) {
-    fprintf(stderr, "Error opening performance event hit.\n");
-    exit(EXIT_FAILURE);
+void read_perf_events(struct perf_args *args) {
+  for (size_t x = 0; x < args->counter_count; x++) {
+    args->vals[x] +=
+        read_perf_event(args->group_fd, args->ids[x], args->counter_count);
   }
+};
 
-  struct perf_event_attr pe_miss;
-  uint64_t fd_miss;
-  memset(&pe_miss, 0, sizeof(struct perf_event_attr));
-  pe_miss.type = PERF_TYPE_HW_CACHE;
-  pe_miss.size = sizeof(struct perf_event_attr);
-  pe_miss.config = PERF_COUNT_HW_CACHE_L1D | PERF_COUNT_HW_CACHE_OP_READ << 8 |
-                   PERF_COUNT_HW_CACHE_RESULT_MISS << 16;
-  pe_miss.disabled = 1;
-  pe_miss.exclude_kernel = 1;
-  pe_miss.exclude_hv = 1;
-  pe_miss.read_format = PERF_FORMAT_GROUP | PERF_FORMAT_ID;
-  fd_miss = perf_event_open(&pe_miss, 0, -1, fd, 0);
-  if (fd_miss == -1) {
-    fprintf(stderr, "Error opening performance event miss.\n");
-    exit(EXIT_FAILURE);
-  }
-
-  out->g_fd = fd;
-  out->hit_id = get_perf_event_id(fd);
-  out->miss_id = get_perf_event_id(fd_miss);
+void free_perf_args(struct perf_args *args) {
+  free(args->vals);
+  free(args->ids);
+  free(args->hex_vals);
+  free(args);
 }
+
+void dump_json(struct perf_args *args) {
+  std::ofstream o("counters.json");
+  nlohmann::json j;
+  for (size_t x = 0; x < args->counter_count; x++) {
+    j[getHexStr((hex_values)args->hex_vals[x])] =
+        (uint64_t)args->vals[x] / args->runs;
+  }
+  o << std::setw(4) << j << std::endl;
+  o.close();
+}
+void print_counters(struct perf_args *args) {
+  for (size_t x = 0; x < args->counter_count; x++) {
+    std::stringstream ss;
+    ss << getHexStr((hex_values)args->hex_vals[x]) << ": "
+       << (uint64_t)(args->vals[x] / args->runs);
+    std::cout << ss.str() << std::endl;
+  }
+};
