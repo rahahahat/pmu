@@ -112,7 +112,6 @@ struct perf_args *start_pmu_events(int argc, char **argv);
 void stop_perf_events(struct perf_args *args);
 void read_perf_events(struct perf_args *args);
 void free_perf_args(struct perf_args *args);
-void dump_json(struct perf_args *args);
 void print_counters(struct perf_args *args);
 
 #define RUN_PERF(...)                                                          \
@@ -120,8 +119,8 @@ void print_counters(struct perf_args *args);
   {__VA_ARGS__};                                                               \
   stop_perf_events(args);                                                      \
   read_perf_events(args);                                                      \
-  dump_json(args);                                                             \
-  print_counters(args);
+  print_counters(args);                                                        \
+  free_perf_args(args);
 
 #ifdef __cplusplus
 }

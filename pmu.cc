@@ -221,16 +221,6 @@ void free_perf_args(struct perf_args *args) {
   free(args);
 }
 
-void dump_json(struct perf_args *args) {
-  std::ofstream o("counters.json");
-  nlohmann::json j;
-  for (size_t x = 0; x < args->counter_count; x++) {
-    j[getHexStr((hex_values)args->hex_vals[x])] =
-        (uint64_t)args->vals[x] / args->runs;
-  }
-  o << std::setw(4) << j << std::endl;
-  o.close();
-}
 void print_counters(struct perf_args *args) {
   for (size_t x = 0; x < args->counter_count; x++) {
     std::stringstream ss;

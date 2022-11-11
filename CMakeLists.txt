@@ -10,7 +10,7 @@ set(CMAKE_MACOSX_RPATH 1)
 set(SOURCES pmu.cc)
 add_library(pmu STATIC ${SOURCES})
 target_include_directories(pmu PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
-target_include_directories(pmu PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/libs)
+# target_include_directories(pmu PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/libs)
 target_compile_options(pmu PUBLIC -static)
 
 
