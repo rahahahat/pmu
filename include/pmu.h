@@ -13,10 +13,6 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 static char *labels[23] = {"CPU_CYCLES",
                            "L1D_CACHE",
                            "INST_RETIRED",
@@ -98,6 +94,10 @@ struct perf_args {
   uint64_t *vals;
 };
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 static uint64_t perf_event_open(struct perf_event_attr *hw_event, pid_t pid,
                                 int cpu, int group_fd, unsigned long flags);
 uint64_t get_perf_event_id(int fd);
@@ -115,6 +115,10 @@ void read_perf_events(struct perf_args *args);
 void free_perf_args(struct perf_args *args);
 void print_counters(struct perf_args *args);
 
+#ifdef __cplusplus
+}
+#endif
+
 #define RUN_PERF(...)                                                          \
   struct perf_args *args = start_pmu_events(argc, argv);                       \
   {__VA_ARGS__};                                                               \
@@ -122,9 +126,5 @@ void print_counters(struct perf_args *args);
   read_perf_events(args);                                                      \
   print_counters(args);                                                        \
   free_perf_args(args);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif
