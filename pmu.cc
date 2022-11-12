@@ -227,3 +227,14 @@ void print_counters(struct perf_args *args) {
               << (uint64_t)(args->vals[x] / args->runs) << std::endl;
   }
 };
+
+uint64_t get_runs(int argc, char **argv) {
+  for (size_t x = 1; x < argc; x++) {
+    std::string s(argv[x]);
+    if (s.find("--runs") != std::string::npos) {
+      auto vec = split(s, "=");
+      return std::stoull(vec[1]);
+    }
+  }
+  return 0;
+}

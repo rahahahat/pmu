@@ -114,16 +114,20 @@ void stop_perf_events(struct perf_args *args);
 void read_perf_events(struct perf_args *args);
 void free_perf_args(struct perf_args *args);
 void print_counters(struct perf_args *args);
+uint64_t get_runs(int argc, char **argv);
 
 #ifdef __cplusplus
 }
 #endif
 
 #define RUN_PERF(...)                                                          \
-  struct perf_args *args = start_pmu_events(argc, argv);                       \
-  {__VA_ARGS__};                                                               \
-  stop_perf_events(args);                                                      \
-  read_perf_events(args);                                                      \
+  uint64_t runs = get_runs(argc, argv);                                        \
+  for (size_t r = 0; r < runs; r++) {                                          \
+    struct perf_args *args = start_pmu_events(argc, argv);                     \
+    {__VA_ARGS__};                                                             \
+    stop_perf_events(args);                                                    \
+    read_perf_events(args);                                                    \
+  }                                                                            \
   print_counters(args);                                                        \
   free_perf_args(args);
 
