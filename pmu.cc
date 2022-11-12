@@ -189,13 +189,15 @@ struct perf_args *parseHexArguments(int argc, char **argv) {
 void start_pmu_events(int argc, char **argv, struct perf_args *args_) {
   args_->ids = (uint64_t *)malloc(args_->counter_count * sizeof(uint64_t));
   args_->vals = (uint64_t *)malloc(args_->counter_count * sizeof(uint64_t));
-  args_->group_fd = -1;
+  std::vector<int> ids;
+  ids.resize(args_->counter_count);
+  ids[0] = -1;
   for (size_t x = 0; x < args_->counter_count; x++) {
     args_->vals[x] = 0;
-    int fd_ = create_perf_event(args_->hex_vals[x], args_->group_fd);
-    args_->group_fd = (x == 0) ? fd_ : args_->group_fd;
-    args_->ids[x] = get_perf_event_id(fd_);
+    ids[x] = create_perf_event(args_->hex_vals[x], ids[0]);
+    args_->ids[x] = get_perf_event_id(ids[x]);
   }
+  args_->group_fd = ids[0];
   reset_perf_event(args_->group_fd, 1);
   enable_perf_event(args_->group_fd, 1);
 };
