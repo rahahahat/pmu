@@ -109,7 +109,7 @@ uint64_t read_perf_event(int fd, uint64_t id, uint64_t num_events);
 uint64_t create_perf_event(uint32_t config, int group_fd);
 
 struct perf_args *parseHexArguments(int argc, char **argv);
-struct perf_args *start_pmu_events(int argc, char **argv);
+void start_pmu_events(int argc, char **argv, struct perf_args *args_);
 void stop_perf_events(struct perf_args *args);
 void read_perf_events(struct perf_args *args);
 void free_perf_args(struct perf_args *args);
@@ -121,9 +121,9 @@ uint64_t get_runs(int argc, char **argv);
 #endif
 
 #define RUN_PERF(...)                                                          \
-  uint64_t runs = get_runs(argc, argv);                                        \
+  struct perf_args *args = *parseHexArguments(int argc, char **argv);          \
   for (size_t r = 0; r < runs; r++) {                                          \
-    struct perf_args *args = start_pmu_events(argc, argv);                     \
+    start_pmu_events(argc, argv, args);                                        \
     {__VA_ARGS__};                                                             \
     stop_perf_events(args);                                                    \
     read_perf_events(args);                                                    \

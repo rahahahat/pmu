@@ -186,8 +186,7 @@ struct perf_args *parseHexArguments(int argc, char **argv) {
   return args_;
 }
 
-struct perf_args *start_pmu_events(int argc, char **argv) {
-  struct perf_args *args_ = parseHexArguments(argc, argv);
+void start_pmu_events(int argc, char **argv, struct perf_args *args_) {
   args_->ids = (uint64_t *)malloc(args_->counter_count * sizeof(uint64_t));
   args_->vals = (uint64_t *)malloc(args_->counter_count * sizeof(uint64_t));
   args_->group_fd = -1;
@@ -199,7 +198,6 @@ struct perf_args *start_pmu_events(int argc, char **argv) {
   }
   reset_perf_event(args_->group_fd, 1);
   enable_perf_event(args_->group_fd, 1);
-  return args_;
 };
 
 void stop_perf_events(struct perf_args *args) {
