@@ -195,14 +195,11 @@ void start_pmu_events(int argc, char **argv, struct perf_args *args_) {
   args_->fds[0] = -1;
   std::vector<int> ids;
   ids.resize(args_->counter_count);
-  assert(args_->fds[0] == -1 && args_->group_fd == -1);
   for (size_t x = 0; x < args_->counter_count; x++) {
     args_->vals[x] = 0;
     args_->fds[x] = create_perf_event(args_->hex_vals[x], args_->fds[0]);
     args_->ids[x] = get_perf_event_id(args_->fds[x]);
   }
-  args_->group_fd = args_->fds[0];
-  assert(args_->group_fd != -1 && args_->fds[0] != -1);
   reset_perf_event(args_->group_fd, 1);
   enable_perf_event(args_->group_fd, 1);
 };
