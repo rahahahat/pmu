@@ -115,6 +115,7 @@ void stop_perf_events(struct perf_args *args);
 void read_perf_events(struct perf_args *args);
 void free_perf_args(struct perf_args *args);
 void print_counters(struct perf_args *args);
+void reset_and_enable_pmu_events(int fd);
 uint64_t get_runs(int argc, char **argv);
 
 #ifdef __cplusplus
@@ -125,8 +126,7 @@ uint64_t get_runs(int argc, char **argv);
   struct perf_args *args = parseHexArguments(argc, argv);                      \
   start_pmu_events(argc, argv, args);                                          \
   for (size_t r = 0; r < args->runs; r++) {                                    \
-    reset_perf_event(args->group_fd, 1);                                       \
-    enable_perf_event(args->group_fd, 1);                                      \
+    reset_and_enable_pmu_events(args->group_fd);                               \
     {__VA_ARGS__};                                                             \
     stop_perf_events(args);                                                    \
     read_perf_events(args);                                                    \

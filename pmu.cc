@@ -202,6 +202,11 @@ void start_pmu_events(int argc, char **argv, struct perf_args *args_) {
   args_->group_fd = args_->fds[0];
 };
 
+void reset_and_enable_pmu_events(int fd) {
+  reset_perf_event(fd, 1);
+  enable_perf_event(fd, 1);
+};
+
 void stop_perf_events(struct perf_args *args) {
   disable_perf_event(args->group_fd, 1);
 };
