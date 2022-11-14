@@ -62,7 +62,7 @@ params = getParams(sys.argv[1:])
 
 for counters in all_counters:
     out_dir = params["out_dir"]
-    cmd = [params["bin"]] + params["args"] + [("--runs=%s" % params["runs"]), ("--counters=%s" % "".join(counters, ","))]
+    cmd = [params["bin"]] + params["args"] + [("--runs=%s" % params["runs"]), ("--counters=%s" % ",".join(counters))]
     result = subprocess.run(cmd, stdout=subprocess.PIPE)
     for line in result.stdout.splitlines():
         if line.startswith("PMU_EVENT"):
