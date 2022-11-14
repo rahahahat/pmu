@@ -36,7 +36,7 @@ def get_exec_args(exec_args: str):
 def getParams(params):
     p_obj = {
         "bin": "",
-        "args": "",
+        "args": [],
         "runs": "",
         "csv_name": "",
         "out_dir": "",
