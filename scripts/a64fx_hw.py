@@ -64,7 +64,7 @@ for counters in all_counters:
     out_dir = params["out_dir"]
     cmd = [params["bin"]] + params["args"] + [("--runs=%s" % params["runs"]), ("--counters=%s" % ",".join(counters))]
     result = subprocess.run(cmd, stdout=subprocess.PIPE)
-    for line in result.stdout.splitlines():
+    for line in result.stdout.decode('utf-8').splitlines():
         if line.startswith("PMU_EVENT"):
             prefix, counter, value = line.split(":")
             counted_events[counter] = int(value)
