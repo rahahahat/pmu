@@ -193,15 +193,13 @@ void start_pmu_events(int argc, char **argv, struct perf_args *args_) {
   args_->fds = (int *)malloc(args_->counter_count * sizeof(int));
   args_->group_fd = -1;
   args_->fds[0] = -1;
-  std::vector<int> ids;
-  ids.resize(args_->counter_count);
   for (size_t x = 0; x < args_->counter_count; x++) {
     args_->vals[x] = 0;
     args_->fds[x] = create_perf_event(args_->hex_vals[x], args_->fds[0]);
     args_->ids[x] = get_perf_event_id(args_->fds[x]);
   }
-  reset_perf_event(args_->group_fd, 1);
-  enable_perf_event(args_->group_fd, 1);
+  assert(args_->fds[0] != -1);
+  args_->group_fd = args_->fds[0];
 };
 
 void stop_perf_events(struct perf_args *args) {

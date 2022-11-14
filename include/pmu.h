@@ -123,8 +123,10 @@ uint64_t get_runs(int argc, char **argv);
 
 #define RUN_PERF(...)                                                          \
   struct perf_args *args = parseHexArguments(argc, argv);                      \
+  start_pmu_events(argc, argv, args);                                          \
   for (size_t r = 0; r < args->runs; r++) {                                    \
-    start_pmu_events(argc, argv, args);                                        \
+    reset_perf_event(args->group_fd, 1);                                       \
+    enable_perf_event(args->group_fd, 1);                                      \
     {__VA_ARGS__};                                                             \
     stop_perf_events(args);                                                    \
     read_perf_events(args);                                                    \
