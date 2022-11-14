@@ -13,6 +13,16 @@ counted_events = {
     "STALL_BACKEND": 0,
 }
 
+labels = [
+    "CPU_CYCLES",
+    "INST_RETIRED",
+    "L1D_CACHE",
+    "L2D_CACHE",
+    "L2_MISS_COUNT",
+    "STALL_FRONTEND",
+    "STALL_BACKEND",
+]
+
 all_counters = [
     [
     "CPU_CYCLES",
@@ -71,6 +81,6 @@ for counters in all_counters:
 
 with open('%s/%s.csv' % (params["out_dir"], params["csv_name"]), 'w', newline='') as csvfile:
     fieldnames = list(counted_events.keys())
-    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+    writer = csv.DictWriter(csvfile, fieldnames=labels)
     writer.writeheader()
     writer.writerow(counted_events)
