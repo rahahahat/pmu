@@ -78,6 +78,7 @@ for counters in all_counters:
         if line.startswith("PMU_EVENT"):
             prefix, counter, value = line.split(":")
             counted_events[counter] = int(value)
+    print(result.stdout.decode('utf-8'))
 
 with open('%s/%s.csv' % (params["out_dir"], params["csv_name"]), 'w', newline='') as csvfile:
     fieldnames = list(counted_events.keys())
