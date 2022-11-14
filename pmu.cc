@@ -233,7 +233,7 @@ void free_perf_args(struct perf_args *args) {
 void print_counters(struct perf_args *args) {
   for (size_t x = 0; x < args->counter_count; x++) {
     std::string s = "";
-    std::cout << getHexStr((hex_values)args->hex_vals[x]) << ": "
+    std::cout << "PMU_EVENT:" << getHexStr((hex_values)args->hex_vals[x]) << ":"
               << (uint64_t)(args->vals[x] / args->runs) << std::endl;
   }
 };
