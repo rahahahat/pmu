@@ -1,3 +1,4 @@
+#include <cassert>
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -189,15 +190,19 @@ struct perf_args *parseHexArguments(int argc, char **argv) {
 void start_pmu_events(int argc, char **argv, struct perf_args *args_) {
   args_->ids = (uint64_t *)malloc(args_->counter_count * sizeof(uint64_t));
   args_->vals = (uint64_t *)malloc(args_->counter_count * sizeof(uint64_t));
+  args_->fds = (int *)malloc(args_->counter_count * sizeof(int));
+  args_->group_fd = -1;
+  args_->fds[0] = -1;
   std::vector<int> ids;
   ids.resize(args_->counter_count);
-  ids[0] = -1;
+  assert(args_->fds[0] == -1 && args_->group_fd == -1);
   for (size_t x = 0; x < args_->counter_count; x++) {
     args_->vals[x] = 0;
-    ids[x] = create_perf_event(args_->hex_vals[x], ids[0]);
+    args_->fds[x] = create_perf_event(args_->hex_vals[x], args_->fds[0]);
     args_->ids[x] = get_perf_event_id(ids[x]);
   }
-  args_->group_fd = ids[0];
+  args_->group_fd = args_->fds[0];
+  assert(args_->group_fd != -1 && args_->fds[0] != -1);
   reset_perf_event(args_->group_fd, 1);
   enable_perf_event(args_->group_fd, 1);
 };
@@ -214,6 +219,11 @@ void read_perf_events(struct perf_args *args) {
 };
 
 void free_perf_args(struct perf_args *args) {
+  // Close all file descriptors.
+  for (size_t x = 0; x < args->counter_count; x++) {
+    close(args->fds[x]);
+  }
+  free(args->fds);
   free(args->vals);
   free(args->ids);
   free(args->hex_vals);
@@ -223,7 +233,7 @@ void free_perf_args(struct perf_args *args) {
 void print_counters(struct perf_args *args) {
   for (size_t x = 0; x < args->counter_count; x++) {
     std::string s = "";
-    std::cout << getHexStr((hex_values)args->vals[x]) << ": "
+    std::cout << getHexStr((hex_values)args->hex_vals[x]) << ": "
               << (uint64_t)(args->vals[x] / args->runs) << std::endl;
   }
 };

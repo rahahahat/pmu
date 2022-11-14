@@ -90,6 +90,7 @@ struct perf_args {
   size_t counter_count;
   uint64_t *ids;
   int group_fd;
+  int *fds;
   size_t runs;
   uint64_t *vals;
 };
